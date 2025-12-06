@@ -8,6 +8,9 @@
     <Project Path="Polygon/Polygon.csproj" />
   </Folder>
   <Folder Name="/Templates/">
-    <Project Path="Templates/SampleSignals/SampleSignals.csproj" />
+    <Project Path="Templates/Signals/SampleSignals/SampleSignals.csproj" />
+  </Folder>
+  <Folder Name="/Tools/">
+    <Project Path="Tools/Signals.Manifest.BuildTask/Signals.Manifest.BuildTask.csproj" />
   </Folder>
 </Solution>
