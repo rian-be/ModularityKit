@@ -38,6 +38,9 @@ public interface IEventBus
 
     void Subscribe<TEvent>(Func<TEvent, EventContext, Task> handler) where TEvent : IEvent;
 
+    Task<TResponse> Send<TRequest, TResponse>(TRequest request)
+        where TRequest : IEvent
+        where TResponse : IResponseEvent;
 
     /// <summary>
     /// Subscribes a one-time handler for a specific event type. Handler is removed after first execution.

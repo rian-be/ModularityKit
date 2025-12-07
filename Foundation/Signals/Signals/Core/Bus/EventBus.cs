@@ -20,13 +20,15 @@ namespace Signals.Core.Bus;
 public sealed class EventBus(ISubscriptionManager subscriptionManager, IPublisher publisher)
     : IEventBus
 {
+    public ISubscriptionManager SubscriptionManager { get; } = subscriptionManager;
+
     /// <inheritdoc />
     public void Subscribe<TEvent>(
         Func<TEvent, Task> handler,
         int priority = 0,
         Func<TEvent, bool>? filter = null)
         where TEvent : IEvent
-        => subscriptionManager.Subscribe(handler, priority, filter);
+        => SubscriptionManager.Subscribe(handler, priority, filter);
     
     /// <inheritdoc />
     public void Subscribe<TEvent>(Func<TEvent, EventContext, Task> handler) where TEvent : IEvent
@@ -41,17 +43,32 @@ public sealed class EventBus(ISubscriptionManager subscriptionManager, IPublishe
         }
     }
     
+    public Task<TResponse> Send<TRequest, TResponse>(TRequest request)
+        where TRequest : IEvent
+        where TResponse : IResponseEvent
+    {
+        if (SubscriptionManager is not IRequestHandlerRegistry registry)
+            throw new InvalidOperationException("EventBus's subscription manager must implement IRequestHandlerRegistry");
+
+        var handler = registry.GetHandler<TRequest, TResponse>();
+        if (handler == null)
+            throw new InvalidOperationException($"No handler registered for {typeof(TRequest).Name}");
+
+        return handler.Handle(request);
+    }
+
+    
     public void SubscribeOnce<TEvent>(
         Func<TEvent, Task> handler,
         int priority = 0,
         Func<TEvent, bool>? filter = null)
         where TEvent : IEvent
-        => subscriptionManager.SubscribeOnce(handler, priority, filter);
+        => SubscriptionManager.SubscribeOnce(handler, priority, filter);
 
     /// <inheritdoc />
     public void Unsubscribe<TEvent>(Func<TEvent, Task> handler)
         where TEvent : IEvent
-        => subscriptionManager.Unsubscribe(handler);
+        => SubscriptionManager.Unsubscribe(handler);
 
     public void Unsubscribe<TEvent>(Func<TEvent, EventContext, Task> handler) where TEvent : IEvent
     {
@@ -67,7 +84,7 @@ public sealed class EventBus(ISubscriptionManager subscriptionManager, IPublishe
         var method = typeof(ISubscriptionManager)
             .GetMethod(nameof(ISubscriptionManager.Subscribe))!
             .MakeGenericMethod(eventType);
-        method.Invoke(subscriptionManager, [handler, 0, null]);
+        method.Invoke(SubscriptionManager, [handler, 0, null]);
     }
 
     /// <inheritdoc />
@@ -79,7 +96,7 @@ public sealed class EventBus(ISubscriptionManager subscriptionManager, IPublishe
         var method = typeof(ISubscriptionManager)
             .GetMethod(nameof(ISubscriptionManager.Unsubscribe))!
             .MakeGenericMethod(eventType);
-        method.Invoke(subscriptionManager, [handler]);
+        method.Invoke(SubscriptionManager, [handler]);
     }
 
     /// <inheritdoc />

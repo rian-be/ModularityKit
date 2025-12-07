@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Signals.Core.Modules;
 
 namespace Signals.Runtime.Manifest;
 
@@ -10,13 +9,13 @@ namespace Signals.Runtime.Manifest;
 /// <list type="bullet">
 /// <item>Used by module loaders to identify, load, and activate modules dynamically.</item>
 /// <item>Contains metadata such as <see cref="Id"/>, <see cref="Name"/>, <see cref="Version"/>, <see cref="Author"/>, and <see cref="Description"/>.</item>
-/// <item><see cref="EntryPoint"/> specifies the fully-qualified type name of the class implementing <see cref="ISignalModule"/>.</item>
+/// <item><see cref="EntryPoint"/> specifies the fully-qualified type name of the class implementing <see cref="Signals.Core.Modules.ISignalModule"/>.</item>
 /// <item><see cref="ApiVersion"/> can be used to enforce compatibility with the host system.</item>
 /// <item><see cref="Dependencies"/> lists other modules that must be loaded first to satisfy runtime requirements.</item>
 /// <item>Supports serialization/deserialization via JSON for manifest files.</item>
 /// </list>
 /// </remarks>
-public sealed class ModuleManifest
+public sealed record ModuleManifest
 {
     [JsonPropertyName("id")]
     public required string Id { get; init; }
@@ -29,10 +28,10 @@ public sealed class ModuleManifest
 
     [JsonPropertyName("entryPoint")]
     public required string EntryPoint { get; init; }
-    
+
     [JsonPropertyName("dll")]
     public required string Dll { get; init; }
-    
+
     [JsonPropertyName("author")]
     public string? Author { get; init; }
 
@@ -43,5 +42,5 @@ public sealed class ModuleManifest
     public string? ApiVersion { get; init; }
 
     [JsonPropertyName("dependencies")]
-    public ModuleDependency[] Dependencies { get; init; } = [];
+    public string[] Dependencies { get; init; } = [];
 }

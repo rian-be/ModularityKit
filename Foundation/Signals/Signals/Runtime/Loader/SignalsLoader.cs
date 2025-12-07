@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Signals.Core.Bus;
+using Signals.Core.Events;
 using Signals.Core.Modules;
 using Signals.Runtime.Interfaces;
 using Signals.Runtime.Manifest;
@@ -7,16 +8,16 @@ using Signals.Runtime.Manifest;
 namespace Signals.Runtime.Loader;
 
 /// <summary>
-/// Responsible for loading, activating, and unloading signal plugins from assemblies.
+/// Responsible for loading, activating, and unloading signals from assemblies.
 /// </summary>
 /// <remarks>
 /// <list type="bullet">
 /// <item>Uses <see cref="IModuleManifestReader"/> to read plugin manifests from JSON files.</item>
-/// <item>Resolves dependencies between plugins using <see cref="IModuleDependencyResolver"/>.</item>
+/// <item>Resolves dependencies between signals using <see cref="IModuleDependencyResolver"/>.</item>
 /// <item>Loads assemblies via <see cref="IModuleAssemblyLoader"/> and activates signal modules via <see cref="IModuleActivator"/>.</item>
 /// <item>Registers and unregisters signals in the provided <see cref="IEventBus"/>.</item>
-/// <item>Maintains an internal collection of loaded plugins to prevent duplicate loading.</item>
-/// <item>Supports loading multiple plugins from a directory and respects dependency order.</item>
+/// <item>Maintains an internal collection of loaded signals to prevent duplicate loading.</item>
+/// <item>Supports loading multiple signals from a directory and respects dependency order.</item>
 /// </list>
 /// </remarks>
 public sealed class SignalsLoader(
@@ -27,12 +28,21 @@ public sealed class SignalsLoader(
     IModuleActivator activator)
 {
     private readonly Dictionary<string, (Assembly asm, ISignalModule module, ModuleManifest manifest)> _loaded = new();
+   
+    private readonly Dictionary<string, Assembly> _pluginAssemblies = new();
+    
+    public Type? GetPluginEventType(string pluginId, string eventName)
+    {
+        if (!_pluginAssemblies.TryGetValue(pluginId, out var asm))
+            return null;
 
+        return asm.GetTypes().FirstOrDefault(t => t.Name == eventName && typeof(IEvent).IsAssignableFrom(t));
+    }
     public void LoadFromDirectory(string directory)
     {
         var manifests = new List<(string dll, ModuleManifest manifest)>();
 
-        foreach (var manifestPath in Directory.GetFiles(directory, "signal.plugin.json", SearchOption.AllDirectories))
+        foreach (var manifestPath in Directory.GetFiles(directory, "*.signal.json", SearchOption.AllDirectories))
         {
             var manifest = manifestReader.Read(manifestPath);
             
@@ -53,7 +63,7 @@ public sealed class SignalsLoader(
         }
     }
 
-    public void LoadSingle(string dllPath, ModuleManifest manifest)
+    private void LoadSingle(string dllPath, ModuleManifest manifest)
     {
         if (_loaded.ContainsKey(dllPath))
             return;
@@ -67,19 +77,20 @@ public sealed class SignalsLoader(
         var module = activator.Create(asm, manifest);
         module.RegisterSignals(bus);
         _loaded[dllPath] = (asm, module, manifest);
-
-        Console.WriteLine($"Loaded Plugin: {manifest.Name} v{manifest.Version}");
+        _pluginAssemblies[manifest.Id] = asm;
+        Console.WriteLine($"[SignalsLoader] Loaded Signals: {manifest.Name} v{manifest.Version}");
+        Console.WriteLine($"[SignalsLoader] Total loaded: {_loaded.Count}");
     }
 
     public void Unload(string dllPath)
     {
-        if (!_loaded.TryGetValue(dllPath, out var plugin))
+        if (!_loaded.TryGetValue(dllPath, out var signals))
             return;
 
-        plugin.module.UnregisterSignals(bus);
+        signals.module.UnregisterSignals(bus);
         _loaded.Remove(dllPath);
 
-        Console.WriteLine($"Unloaded Plugin: {plugin.manifest.Name}");
+        Console.WriteLine($"Unloaded Signals: {signals.manifest.Name}");
     }
 
     public IReadOnlyCollection<ModuleManifest> LoadedManifests

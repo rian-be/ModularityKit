@@ -32,20 +32,22 @@ public sealed class TopologicalDependencyResolver : IModuleDependencyResolver
 
             if (visited.TryGetValue(id, out var state))
             {
-                if (state == 1) throw new InvalidOperationException("Cyclic dependency");
-                if (state == 2) return;
+                if (state == 1) throw new InvalidOperationException("Cyclic dependency detected");
+                if (state == 2) return; // already visited
             }
 
             visited[id] = 1;
-            foreach (var dep in value.Dependencies)
-                Visit(dep.Id);
+
+            foreach (var depId in value.Dependencies)
+                Visit(depId);
 
             visited[id] = 2;
             result.Add(value);
         }
 
         foreach (var m in dict.Values)
-            if (!visited.ContainsKey(m.Id)) Visit(m.Id);
+            if (!visited.ContainsKey(m.Id))
+                Visit(m.Id);
 
         return result.ToArray();
     }

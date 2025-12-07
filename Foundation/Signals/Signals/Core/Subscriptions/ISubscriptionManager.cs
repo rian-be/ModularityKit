@@ -16,7 +16,7 @@ namespace Signals.Core.Subscriptions;
 /// <item>Thread-safe via <see cref="ConcurrentDictionary{TKey,TValue}"/>.</item>
 /// </list>
 /// </remarks>
-public interface ISubscriptionManager
+public interface ISubscriptionManager : IRequestHandlerRegistry
 {
     /// <summary>
     /// Subscribes a handler for a specific event type.

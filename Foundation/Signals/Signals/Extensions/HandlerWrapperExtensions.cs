@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Signals.Core.Bus;
 using Signals.Core.Handlers;
 
 namespace Signals.Extensions;
