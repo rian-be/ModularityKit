@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Signals\Signals.csproj" />
+    </ItemGroup>
+
 </Project>
