@@ -1,4 +1,6 @@
-﻿namespace Signals.Manifest.BuildTask.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace Signals.Manifest.BuildTask.Models;
 
 /// <summary>
 /// Represents the metadata of a signal plugin used during build tasks.
@@ -13,15 +15,30 @@
 /// </remarks>
 public sealed class SignalsManifest
 {
+    [JsonPropertyName("id")]
     public required string Id { get; init; }
-    public required string Name { get; set; }
+
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
+
+    [JsonPropertyName("version")]
     public required string Version { get; init; }
+
+    [JsonPropertyName("entryPoint")]
     public required string EntryPoint { get; init; }
-    public required string Dll { get; set; }
 
-    public string? Author { get; set; }
-    public string? Description { get; set; }
-    public required string ApiVersion { get; init; }
+    [JsonPropertyName("dll")]
+    public required string Dll { get; init; }
 
-    public string[] Dependencies { get; set; } = [];
+    [JsonPropertyName("author")]
+    public string? Author { get; init; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; init; }
+
+    [JsonPropertyName("apiVersion")]
+    public string? ApiVersion { get; init; }
+
+    [JsonPropertyName("dependencies")]
+    public string[] Dependencies { get; init; } = [];
 }

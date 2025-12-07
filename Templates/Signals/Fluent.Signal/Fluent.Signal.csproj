@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>14</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Foundation\Signals\Signals.ApiBase\Signals.ApiBase.csproj" />
+      <ProjectReference Include="..\..\..\Foundation\Signals\Signals\Signals.csproj" />
+    </ItemGroup>
+    
+    <UsingTask TaskName="Signals.Manifest.BuildTask.GenerateSignalManifestTask"
+               AssemblyFile="..\..\..\Tools\Signals.Manifest.BuildTask\bin\Debug\net10.0\Signals.Manifest.BuildTask.dll" />
+
+    <Target Name="GenerateSignalManifest" AfterTargets="Build">
+        <GenerateSignalManifestTask
+                AssemblyPath="$(TargetPath)"
+                OutputPath="$(OutputPath)" />
+    </Target>
+
+    <!-- Optionally enable if you want the generated JSON to be visible in the project. -->
+    <ItemGroup>
+        <None Include="$(OutputPath)\$(AssemblyName).signal.json" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="bin\Debug\net10.0\" />
+    </ItemGroup>
+</Project>

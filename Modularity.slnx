@@ -7,7 +7,9 @@
   <Folder Name="/Polygon/">
     <Project Path="Polygon/Polygon.csproj" />
   </Folder>
-  <Folder Name="/Templates/">
+  <Folder Name="/Templates/" />
+  <Folder Name="/Templates/Signals/">
+    <Project Path="Templates/Signals/Fluent.Signal/Fluent.Signal.csproj" />
     <Project Path="Templates/Signals/SampleSignals/SampleSignals.csproj" />
   </Folder>
   <Folder Name="/Tools/">
