@@ -32,4 +32,8 @@
       <Content Include="bin\Debug\net10.0\Signals.dll" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Handler\Response\" />
+    </ItemGroup>
+
 </Project>
