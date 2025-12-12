@@ -23,7 +23,9 @@ public sealed class ReadOnlyContextAccessor<TContext>(IContextAccessor<TContext>
         get
         {
             var context = innerAccessor.Current;
-            return context != null ? CreateSnapshot(context) : null;
+            return context != null 
+                ? ReadOnlyContextSnapshot.FromContext(context)
+                : null;
         }
     }
 
@@ -31,19 +33,6 @@ public sealed class ReadOnlyContextAccessor<TContext>(IContextAccessor<TContext>
     public IReadOnlyContext RequireCurrent()
     {
         var context = innerAccessor.RequireCurrent();
-        return CreateSnapshot(context);
-    }
-    
-    /// <summary>
-    /// Creates a read-only snapshot from a mutable context.
-    /// </summary>
-    /// <param name="context">The mutable context to snapshot.</param>
-    /// <returns>A <see cref="ReadOnlyContextSnapshot"/> representing the current state.</returns>
-    private static IReadOnlyContext CreateSnapshot(IContext context)
-    {
-        return new ReadOnlyContextSnapshot(
-            Id: context.Id,
-            CreatedAt: context.CreatedAt
-        );
+        return ReadOnlyContextSnapshot.FromContext(context);
     }
 }
