@@ -3,7 +3,7 @@ using ModularityKit.Context.Abstractions;
 using ModularityKit.Context.ReadOnly;
 using ModularityKit.Context.Runtime;
 
-namespace ModularityKit.Context.Extensions;
+namespace ModularityKit.Context.AspNet;
 
 /// <summary>
 /// Provides extension methods to register context-related services into the DI container.
