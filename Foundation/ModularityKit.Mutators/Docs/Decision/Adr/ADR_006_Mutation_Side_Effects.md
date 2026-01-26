@@ -1,5 +1,8 @@
 # ADR-006: Mutation Side Effects
 
+## Tag
+#adr_006 
+
 ## Status
 Proposed
 

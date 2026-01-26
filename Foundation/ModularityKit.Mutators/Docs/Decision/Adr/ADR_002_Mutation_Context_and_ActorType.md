@@ -1,5 +1,8 @@
 # ADR-002: Mutation Context and Actor Type
 
+## Tag
+#adr_002 
+
 ## Status
 Accepted
 
@@ -45,3 +48,7 @@ The system needs model that can distinguish different actor types (users, system
 - Separating mutation context from mutator logic preserves consistency and auditability.
 - A standard context model simplifies tracking and reporting changes in a distributed system.
 - Context factories (System, User, Service) make it easy to create correct instances and eliminate repetitive code.
+
+## Related ADRs #adr_011 #adr_002
+- ADR-011: Execution Context for Mutation Runtime
+- ADR-002: Mutation Context and Actor Type

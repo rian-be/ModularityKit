@@ -1,5 +1,7 @@
 # ADR-010: Mutation Result Model
 
+## Tag
+#adr_010 
 ## Status
 Accepted
 
@@ -24,8 +26,7 @@ Batch executions of mutations should also aggregate this information, including 
 ### MutationResult
 
 - Represents the result of a single mutation.
-- Contains information about:
-    
+- Contains information about:    
     - Success (`IsSuccess`)
     - New state (`NewState`)
     - Change set (`Changes`)
