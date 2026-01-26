@@ -9,22 +9,22 @@ public sealed class StateChange
     /// <summary>
     /// Path to the changed value (e.g., "Email", "Address.City").
     /// </summary>
-    public string Path { get; init; } = string.Empty;
+    public string Path { get; private init; } = string.Empty;
 
     /// <summary>
     /// Value before the change.
     /// </summary>
-    public object? OldValue { get; init; }
+    public object? OldValue { get; private init; }
 
     /// <summary>
     /// Value after the change.
     /// </summary>
-    public object? NewValue { get; init; }
+    public object? NewValue { get; private init; }
 
     /// <summary>
     /// Type of the change.
     /// </summary>
-    public ChangeType Type { get; init; }
+    internal ChangeType Type { get; init; }
 
     /// <summary>
     /// Timestamp when the change occurred.

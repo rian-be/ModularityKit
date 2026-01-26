@@ -4,7 +4,7 @@ namespace ModularityKit.Mutators.Abstractions.Changes;
 /// Represents the type of state change in a <see cref="StateChange"/>.
 /// Used for tracking and auditing modifications in the system.
 /// </summary>
-public enum ChangeType
+internal enum ChangeType
 {
     /// <summary>
     /// The value was modified (old value updated to new value).
