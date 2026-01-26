@@ -2,7 +2,7 @@ using ModularityKit.Mutators.Abstractions.Context;
 using ModularityKit.Mutators.Abstractions.Intent;
 using ModularityKit.Mutators.Abstractions.Results;
 
-namespace ModularityKit.Mutators.Abstractions;
+namespace ModularityKit.Mutators.Abstractions.Engine;
 
 /// <summary>
 /// Represents a mutation operation that can be applied to a given state of type <typeparamref name="TState"/>.

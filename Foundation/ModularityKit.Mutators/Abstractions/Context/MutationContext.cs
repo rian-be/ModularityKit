@@ -34,7 +34,7 @@ public sealed record MutationContext
     /// <summary>
     /// Type of actor performing the mutation.
     /// </summary>
-    public ActorType ActorType { get; init; } = ActorType.Unknown;
+    internal ActorType ActorType { get; init; } = ActorType.Unknown;
 
     /// <summary>
     /// Reason for performing the mutation.
@@ -109,7 +109,7 @@ public sealed record MutationContext
     /// Creates a user-level mutation context.
     /// </summary>
     /// <param name="userId">User ID performing the mutation.</param>
-    /// <param name="userName">Optional user name.</param>
+    /// <param name="userName">Optional username.</param>
     /// <param name="reason">Optional reason for mutation.</param>
     /// <returns>A <see cref="MutationContext"/> representing a user actor.</returns>
     public static MutationContext User(string userId, string? userName = null, string? reason = null)

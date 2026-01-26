@@ -1,6 +1,7 @@
 using ModularityKit.Mutators.Abstractions.Results;
+using ExecutionContext = ModularityKit.Mutators.Abstractions.Context.ExecutionContext;
 
-namespace ModularityKit.Mutators.Abstractions;
+namespace ModularityKit.Mutators.Abstractions.Engine;
 
 /// <summary>
 /// Low-level executor responsible for applying a mutation to a state.
@@ -23,7 +24,7 @@ namespace ModularityKit.Mutators.Abstractions;
 /// Its sole responsibility is deterministic state transformation.
 /// </para>
 /// </remarks>
-public interface IMutationExecutor
+internal interface IMutationExecutor
 {
     /// <summary>
     /// Executes a mutation against the provided state.

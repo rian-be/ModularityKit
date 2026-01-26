@@ -1,6 +1,7 @@
+using ModularityKit.Mutators.Abstractions.Engine;
 using ModularityKit.Mutators.Runtime;
 
-namespace ModularityKit.Mutators.Abstractions;
+namespace ModularityKit.Mutators.Abstractions.Context;
 
 /// <summary>
 /// Represents the runtime context of a mutation execution.
@@ -25,7 +26,7 @@ namespace ModularityKit.Mutators.Abstractions;
 /// Use <see cref="IsTimedOut"/> to check whether the mutation has exceeded the allowed <see cref="Timeout"/>.
 /// </para>
 /// </remarks>
-public sealed class ExecutionContext
+internal sealed class ExecutionContext
 {
     /// <summary>
     /// Unique identifier for this mutation execution.
