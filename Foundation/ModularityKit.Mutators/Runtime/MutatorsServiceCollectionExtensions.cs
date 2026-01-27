@@ -52,12 +52,24 @@ public static class MutatorsServiceCollectionExtensions
     /// <param name="addDefaultLoggingInterceptor">
     /// If <c>true</c>, automatically registers <see cref="LoggingInterceptor"/> for console logging.
     /// </param>
-    public static void AddMutators(
+   public static void AddMutators(
         this IServiceCollection services,
+        MutationEngineOptions? presetOptions = null,
         Action<MutationEngineOptions>? configure = null,
         bool addDefaultLoggingInterceptor = false)
     {
-        // Core services
+        var options = presetOptions != null 
+            ? new MutationEngineOptions
+            {
+                AlwaysValidate = presetOptions.AlwaysValidate,
+                EnableDetailedMetrics = presetOptions.EnableDetailedMetrics,
+                StopBatchOnFirstFailure = presetOptions.StopBatchOnFirstFailure,
+                MaxConcurrentMutations = presetOptions.MaxConcurrentMutations
+            }
+            : new MutationEngineOptions();
+        
+        configure?.Invoke(options);
+        
         services.AddSingleton<IMutationExecutor, MutationExecutor>();
         services.AddSingleton<IPolicyRegistry, PolicyRegistry>();
         services.AddSingleton<IInterceptorPipeline, InterceptorPipeline>();
@@ -65,11 +77,9 @@ public static class MutatorsServiceCollectionExtensions
         services.AddSingleton<IMutationHistoryStore, InMemoryHistoryStore>();
         services.AddSingleton<IMetricsCollector, MetricsCollectorImpl>();
 
-        // Optional default logging interceptor
         if (addDefaultLoggingInterceptor)
             services.AddSingleton<IMutationInterceptor, LoggingInterceptor>();
 
-        // MutationEngine registration
         services.AddSingleton<IMutationEngine>(sp =>
         {
             var executor = sp.GetRequiredService<IMutationExecutor>();
@@ -81,9 +91,6 @@ public static class MutatorsServiceCollectionExtensions
             var history = sp.GetRequiredService<IMutationHistoryStore>();
             var metrics = sp.GetRequiredService<IMetricsCollector>();
 
-            var options = new MutationEngineOptions();
-            configure?.Invoke(options);
-
             var engine = new MutationEngine(
                 executor,
                 policies,
@@ -93,7 +100,6 @@ public static class MutatorsServiceCollectionExtensions
                 metrics,
                 options);
 
-            // Register interceptors into the engine
             foreach (var interceptor in interceptors)
                 engine.RegisterInterceptor(interceptor);
 

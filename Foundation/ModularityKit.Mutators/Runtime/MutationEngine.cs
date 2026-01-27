@@ -41,8 +41,11 @@ internal sealed class MutationEngine(
     {
         var executionId = Guid.NewGuid().ToString();
         var stopwatch = Stopwatch.StartNew();
-        var metricsScope = _metricsCollector.BeginScope(executionId);
+        IMetricsScope? metricsScope = null;
 
+        if (_options.EnableDetailedMetrics)
+            metricsScope = _metricsCollector.BeginScope(executionId);
+        
         try
         {
             await _interceptorPipeline.OnBeforeMutationAsync(
@@ -53,7 +56,7 @@ internal sealed class MutationEngine(
                 cancellationToken);
 
             var policyDecision = await EvaluatePoliciesAsync(mutation, state, cancellationToken);
-            metricsScope.RecordPolicyEvaluationTime(stopwatch.Elapsed);
+            metricsScope?.RecordPolicyEvaluationTime(stopwatch.Elapsed);
 
             if (!policyDecision.IsAllowed)
             {
@@ -71,12 +74,12 @@ internal sealed class MutationEngine(
 
                 return result;
             }
-            
+
             if (mutation.Context.Mode != MutationMode.Commit || _options.AlwaysValidate)
             {
                 var validationStart = stopwatch.Elapsed;
                 var validation = mutation.Validate(state);
-                metricsScope.RecordValidationTime(stopwatch.Elapsed - validationStart);
+                metricsScope?.RecordValidationTime(stopwatch.Elapsed - validationStart);
 
                 if (!validation.IsValid)
                 {
@@ -85,7 +88,7 @@ internal sealed class MutationEngine(
                     return result;
                 }
             }
-            
+
             MutationResult<TState> mutationResult;
             var executionContext = new ModularityExecutionContext
             {
@@ -121,7 +124,7 @@ internal sealed class MutationEngine(
 
             if (policyDecision.Modifications != null && mutationResult.IsSuccess)
                 mutationResult = ApplyPolicyModifications(mutationResult, policyDecision.Modifications);
-            
+
             await _interceptorPipeline.OnAfterMutationAsync(
                 mutation.Intent,
                 mutation.Context,
@@ -138,7 +141,7 @@ internal sealed class MutationEngine(
                 policyDecision,
                 executionId,
                 stopwatch.Elapsed);
-            
+
             if (mutationResult.IsSuccess && mutation.Context.Mode == MutationMode.Commit)
             {
                 await StoreInHistoryAsync(
@@ -148,10 +151,11 @@ internal sealed class MutationEngine(
                     stopwatch.Elapsed,
                     cancellationToken);
             }
-            
-            metricsScope.RecordStateSize(EstimateStateSize(state));
-            var metrics = metricsScope.Build();
-            await _metricsCollector.RecordAsync(executionId, metrics, cancellationToken);
+
+            metricsScope?.RecordStateSize(EstimateStateSize(state));
+
+            if (metricsScope != null)
+                await _metricsCollector.RecordAsync(executionId, metricsScope.Build(), cancellationToken);
 
             return mutationResult;
         }
@@ -182,7 +186,7 @@ internal sealed class MutationEngine(
         }
         finally
         {
-            metricsScope.Dispose();
+            metricsScope?.Dispose();
         }
     }
 
@@ -193,30 +197,47 @@ internal sealed class MutationEngine(
     {
         var stopwatch = Stopwatch.StartNew();
         var results = new List<MutationResult<TState>>();
-        var currentState = state;
         var allChanges = new ChangeSet();
+        var currentState = state;
 
-        foreach (var mutation in mutations)
+        using var semaphore = new SemaphoreSlim(_options.MaxConcurrentMutations);
+
+        var tasks = mutations.Select(async mutation =>
         {
-            if (cancellationToken.IsCancellationRequested)
-                break;
-
-            var result = await ExecuteAsync(mutation, currentState, cancellationToken);
-            results.Add(result);
-
-            if (!result.IsSuccess)
+            await semaphore.WaitAsync(cancellationToken);
+            try
             {
-                if (_options.StopBatchOnFirstFailure)
-                    break;
-                continue;
+                var result = await ExecuteAsync(mutation, currentState, cancellationToken);
+
+                lock (results)
+                {
+                    results.Add(result);
+                    if (result.IsSuccess)
+                    {
+                        currentState = result.NewState!;
+                        foreach (var change in result.Changes.Changes)
+                            allChanges.Add(change);
+                    }
+                }
+
+                if (!result.IsSuccess && _options.StopBatchOnFirstFailure)
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                return result;
             }
-
-            currentState = result.NewState!;
-
-            foreach (var change in result.Changes.Changes)
+            finally
             {
-                allChanges.Add(change);
+                semaphore.Release();
             }
+        }).ToList();
+
+        try
+        {
+            await Task.WhenAll(tasks);
+        }
+        catch (OperationCanceledException)
+        {
+            // Batch stopped due to failure or StopBatchOnFirstFailure
         }
 
         stopwatch.Stop();
@@ -232,6 +253,7 @@ internal sealed class MutationEngine(
             TotalExecutionTime = stopwatch.Elapsed
         };
     }
+
 
     public void RegisterPolicy<TState>(IMutationPolicy<TState> policy) =>
         _policyRegistry.Register(policy);
