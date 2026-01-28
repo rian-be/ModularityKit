@@ -2,7 +2,6 @@ using ModularityKit.Mutators.Abstractions.Changes;
 
 namespace ModularityKit.Mutators.Abstractions.History;
 
-
 /// <summary>
 /// Represents the full mutation history of a specific state object.
 /// </summary>

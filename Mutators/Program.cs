@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using ModularityKit.Mutators.Abstractions;
 using ModularityKit.Mutators.Abstractions.Engine;
 using ModularityKit.Mutators.Runtime;
@@ -30,7 +30,6 @@ internal static class Program
         //engine.RegisterPolicy(new BusinessHoursPolicy());
         engine.RegisterPolicy(new TwoManApprovalPolicy());
 
-        
         // IamRoles
         engine.RegisterPolicy(new PreventLastAdminRemovalPolicy());
         engine.RegisterPolicy(new RequireTwoManApprovalPolicy());

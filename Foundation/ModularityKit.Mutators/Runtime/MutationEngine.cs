@@ -254,7 +254,6 @@ internal sealed class MutationEngine(
         };
     }
 
-
     public void RegisterPolicy<TState>(IMutationPolicy<TState> policy) =>
         _policyRegistry.Register(policy);
 
@@ -282,7 +281,6 @@ internal sealed class MutationEngine(
             LastUpdatedAt = now
         };
     }
-    
 
     private Task<PolicyDecision> EvaluatePoliciesAsync<TState>(
         IMutation<TState> mutation,

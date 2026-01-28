@@ -101,7 +101,6 @@ internal static class BatchFeatureToggleScenario
             }
         }
 
-
         // Poprawka: używamy FinalState z batchResult
         state = batchResult.FinalState ?? state;
 
