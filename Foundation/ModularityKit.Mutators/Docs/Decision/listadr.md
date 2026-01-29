@@ -1,0 +1,27 @@
+# ADR Index
+
+This document lists all architectural decisions (ADRs) for **ModularityKit.Mutators**.  
+See each ADR for full rationale, context, and decision details.
+
+| ADR     | Title                                                | Link                                                                                         |
+| ------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| ADR-001 | StateChange and ChangeSet Model                      | [ADR-001](Adr/ADR_001_StateChange_ChangeSet_Model.md)                          |
+| ADR-002 | Mutation Context and Actor Type                      | [ADR-002](Adr/ADR_002_Mutation_Context_and_ActorType.md)                       |
+| ADR-003 | MutationIntent and BlastRadius                       | [ADR-003](Adr/ADR_003_MutationIntent_and_BlastRadius.md)                       |
+| ADR-004 | Mutation Policies and PolicyDecision                 | [ADR-004](Adr/ADR_004_Mutation_Policies_and_PolicyDecision.md)                 |
+| ADR-005 | Mutation Audit Abstractions                          | [ADR-005](Adr/ADR_005_Mutation_Audit_Abstractions.md)                          |
+| ADR-006 | Mutation Side Effects                                | [ADR-006](Adr/ADR_006_Mutation_Side_Effects.md)                                |
+| ADR-007 | Mutation History and Audit                           | [ADR-007](Adr/ADR_007_Mutation_History_and_Audit.md)                           |
+| ADR-008 | Mutation Interceptor                                 | [ADR-008](Adr/ADR_008_Mutation_Interceptor.md)                                 |
+| ADR-009 | Mutation Metrics                                     | [ADR-009](Adr/ADR_009_Mutation_Metrics.md)                                     |
+| ADR-010 | Mutation Result Model                                | [ADR-010](Adr/ADR_010_Mutation_Result_Model.md)                                |
+| ADR-011 | Execution Context for Mutation Runtime               | [ADR-011](Adr/ADR_011_Execution_Context_for_Mutation_Runtime.md)               |
+| ADR-012 | Mutation Execution Interfaces and Context Separation | [ADR-012](Adr/ADR_012_Mutation_Execution_Interfaces_and_Context_Separation.md) |
+| ADR-013 | Mutation Engine and Executor Runtime Integration     | [ADR-013](Adr/ADR_013_Mutation_Engine_and_Executor_Runtime_Integration.md)     |
+| ADR-014 | InMemory Auditor and HistoryStore                    | [ADR-014](Adr/ADR_014_InMemory_Auditor_and_HistoryStore.md)                    |
+| ADR-015 | Mutation Interceptor Pipeline                        | [ADR-015](Adr/ADR_015_Mutation_Interceptor_Pipeline.md)                        |
+| ADR-016 | Mutation Metrics Collection                          | [ADR-016](Adr/ADR_016_Mutation_Metrics_Collection.md)                          |
+| ADR-017 | Mutation PolicyRegistry                              | [ADR-017](Adr/ADR_017_Mutation_PolicyRegistry.md)                              |
+| ADR-018 | Mutators DI Registration                             | [ADR-018](Adr/ADR_018_Mutators_DI_Registration.md)                             |
+
+> See individual ADRs for detailed context, decision rationale, and consequences.

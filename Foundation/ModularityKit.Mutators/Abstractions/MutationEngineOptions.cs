@@ -1,0 +1,93 @@
+using ModularityKit.Mutators.Abstractions.Exceptions;
+
+namespace ModularityKit.Mutators.Abstractions;
+
+/// <summary>
+/// Configuration options controlling the behavior of the mutation engine.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <see cref="MutationEngineOptions"/> defines execution semantics such as validation strategy,
+/// timeout handling, batching behavior, and performance characteristics.
+/// </para>
+/// <para>
+/// These options are typically configured once per engine instance and treated as immutable
+/// during execution.
+/// </para>
+/// </remarks>
+public sealed class MutationEngineOptions
+{
+    /// <summary>
+    /// Determines whether mutations should always be validated,
+    /// even when executed in Commit mode.
+    /// </summary>
+    /// <remarks>
+    /// When enabled, all validation rules are enforced regardless of execution mode.
+    /// Disabling this may improve performance but can allow invalid mutations to execute.
+    /// </remarks>
+    public bool AlwaysValidate { get; set; } = true;
+
+    /// <summary>
+    /// The maximum allowed execution time for a single mutation.
+    /// </summary>
+    /// <remarks>
+    /// When specified, exceeding this duration results in an
+    /// <see cref="ExecutionTimeoutException"/>.
+    /// </remarks>
+    public TimeSpan? ExecutionTimeout { get; set; }
+
+    /// <summary>
+    /// Indicates whether batch execution should stop after the first failure.
+    /// </summary>
+    /// <remarks>
+    /// When enabled, subsequent mutations in the batch will not be executed
+    /// once a failure occurs.
+    /// </remarks>
+    public bool StopBatchOnFirstFailure { get; set; } = true;
+
+    /// <summary>
+    /// Enables collection of detailed execution metrics.
+    /// </summary>
+    /// <remarks>
+    /// Detailed metrics provide deep observability but may have a measurable
+    /// performance impact in high-throughput scenarios.
+    /// </remarks>
+    public bool EnableDetailedMetrics { get; set; } = false;
+
+    /// <summary>
+    /// The maximum number of mutations that may be executed concurrently.
+    /// </summary>
+    /// <remarks>
+    /// This setting controls parallelism and can be used to limit resource usage
+    /// or avoid contention.
+    /// </remarks>
+    public int MaxConcurrentMutations { get; set; } = 10;
+
+    /// <summary>
+    /// Default engine configuration with balanced safety and performance.
+    /// </summary>
+    public static MutationEngineOptions Default => new();
+
+    /// <summary>
+    /// Strict configuration emphasizing correctness, validation, and observability.
+    /// </summary>
+    public static MutationEngineOptions Strict => new()
+    {
+        AlwaysValidate = true,
+        StopBatchOnFirstFailure = true,
+        EnableDetailedMetrics = true
+    };
+
+    /// <summary>
+    /// Performance-oriented configuration minimizing overhead.
+    /// </summary>
+    /// <remarks>
+    /// Intended for trusted environments where validation and detailed metrics
+    /// can be safely reduced.
+    /// </remarks>
+    public static MutationEngineOptions Performance => new()
+    {
+        AlwaysValidate = false,
+        EnableDetailedMetrics = false
+    };
+}
