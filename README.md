@@ -12,6 +12,9 @@
   </a>
 </p>
 
+> [!CAUTION]
+> Repository will not be developed further the project has been transferred to organization for better work organization woo womp
+
 Build scalable, modular .NET applications faster and more efficiently.
 Modularity is a high-performance framework for creating flexible, modular systems with easy integration of custom components, efficient inter-module communication, and built-in tools for debugging and testing.
 
